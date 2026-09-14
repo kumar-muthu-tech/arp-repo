@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { agents } from '../../data/agents';
+import { getEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  return Promise.all(agents.map(async (agent) => ({
+    params: { agent: agent.slug },
+    props: { agent, content: await getEntry('agent', agent.content) }
+  })));
+}
+
+const { agent, content } = Astro.props;
+const { Content } = await content.render();
+---
+<Base title={`${agent.name} — Agents`}>
+  <section>
+    <a href="/agents/" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">&lt;- All agents</a>
+    <p class="mt-10 text-sm font-semibold uppercase tracking-[0.16em] text-cyan-600">Agent</p>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl">{agent.name}</h1>
+    <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">{agent.description}</p>
+    <div class="prose prose-slate mt-10 max-w-3xl">
+      <Content />
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const published = posts
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => +b.data.pubDate - +a.data.pubDate);
+const pageSize = 6;
+const latestPosts = published.slice(0, pageSize);
+---
+<Base title="AI & Systems — Blog">
+  {latestPosts.length > 0 && (
+    <section class="mb-20">
+      <div class="space-y-6">
+        {latestPosts.map((post) => (
+          <article class="border-t border-slate-200 py-6 transition-colors first:border-t-0 hover:border-cyan-500">
+            <a href={`/blog/${post.slug}`} class="no-underline">
+              <h3 class="text-xl font-semibold text-slate-950">{post.data.title}</h3>
+              <p class="mt-2 text-sm leading-6 text-slate-600">{post.data.description}</p>
+              <div class="mt-3 flex gap-2">
+                {post.data.tags?.map((t) => (
+                  <span class="tag-chip">{t}</span>
+                ))}
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+      {published.length > pageSize && (
+        <a href="/blog/page/1" class="mt-8 inline-flex items-center font-semibold text-cyan-700 hover:text-cyan-900">View all posts <span aria-hidden="true" class="ml-2">-&gt;</span></a>
+      )}
+    </section>
+  )}
+
+  <section id="about" class="max-w-3xl">
+    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-600">About AeroPlanetaAI</p>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">From technical complexity to autonomous solutions.</h2>
+    <p class="mt-8 text-lg leading-8 text-slate-600">At AeroPlanetaAI, we bridge the gap between complex technical problems and autonomous solutions. Our curated marketplace helps developers, engineers, and technology-led enterprises discover, test, and integrate production-ready AI agents for real work.</p>
+    <p class="mt-5 leading-8 text-slate-600">From automated code refactoring and intelligent data pipelines to agentic workflow orchestration and specialist troubleshooting, AeroPlanetaAI helps teams find the right solution.</p>
+  </section>
+
+</Base>

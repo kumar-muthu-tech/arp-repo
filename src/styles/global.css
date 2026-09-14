@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+/* Small utility for tag chips */
+.tag-chip { @apply inline-flex items-center rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-medium text-cyan-800; }
+
+.logo-control {
+	@apply inline-flex rounded-md transition-transform duration-200 ease-out;
+}
+
+.group:hover .logo-control,
+.group:focus-visible .logo-control {
+	transform: scale(1.08) rotate(-3deg);
+}
+
+.group:focus-visible {
+	@apply rounded-md outline-2 outline-offset-4 outline-cyan-600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.logo-control {
+		transition: none;
+	}
+
+	.group:hover .logo-control,
+	.group:focus-visible .logo-control {
+		transform: none;
+	}
+}

@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import Post from '../../layouts/Post.astro';
+import { getCollection, getEntryBySlug } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+
+  return posts
+    .filter((post) => !post.data.draft)
+    .map((post) => ({
+      params: { slug: post.slug }
+    }));
+}
+
+const { slug } = Astro.params;
+const post = await getEntryBySlug('blog', slug);
+if (!post) throw new Error('Post not found');
+
+// Render MDX content to a component
+const rendered = await post.render();
+const { Content } = rendered;
+
+// Simple reading time estimate
+function estimateReadingTime(text) {
+  const t = String(text || '');
+  const words = t.split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  return `${minutes} min read`;
+}
+
+const rawText = (post.body && (post.body as any).raw) || '';
+const readingTime = estimateReadingTime(rawText || post.data.description || '');
+---
+<Post frontmatter={{ ...post.data, pubDate: post.data.pubDate instanceof Date ? post.data.pubDate : new Date(post.data.pubDate) }} readingTime={readingTime}>
+  <Content />
+</Post>

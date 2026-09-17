@@ -1,0 +1,10 @@
+services:
+  ap-site:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${IMAGE:-ap-site:latest}
+    container_name: ap-site
+    restart: unless-stopped
+    ports:
+      - "8080:80"

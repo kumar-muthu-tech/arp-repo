@@ -39,6 +39,24 @@ docker compose ps
 docker compose logs --tail=100
 ```
 
+## GitHub Actions deployment
+
+The `Build and deploy` workflow runs on pushes to `master`. It builds the Astro site, publishes `ghcr.io/<owner>/<repository>:latest`, and deploys it to the server over SSH.
+
+On the Ubuntu server, install Podman and the Compose provider, clone the repository once, and set `IMAGE` when starting Compose:
+
+```bash
+sudo apt update
+sudo apt install -y podman podman-compose git
+sudo mkdir -p /opt/ap-site
+sudo git clone <repository-url> /opt/ap-site
+cd /opt/ap-site
+export IMAGE=ghcr.io/<owner>/<repository>:latest
+podman compose up -d
+```
+
+Add these GitHub repository secrets before running the workflow: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH`, `GHCR_USERNAME`, and `GHCR_READ_TOKEN`. The GHCR token needs permission to read packages. `DEPLOY_PORT` is optional and defaults to `22`.
+
 The container listens on port `8080`, leaving public ports 80 and 443 available for a reverse proxy.
 
 For an existing Nginx reverse proxy, proxy `aeroplanetaai.com` to `http://127.0.0.1:8080` and configure a Let's Encrypt certificate. Caddy can provide the same proxy and HTTPS setup with a single site entry:
